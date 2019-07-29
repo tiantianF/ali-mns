@@ -717,7 +717,15 @@ var AliMNS;
                 _this._openStack.sendP("GET", url, null, null, options).done(function (data) {
                     debug(data);
                     if (data && data.Message && data.Message.MessageBody) {
-                        data.Message.MessageBody = _this.base64ToUtf8(data.Message.MessageBody);
+                        if (data && data.Message && data.Message.MessageBody) {
+                            let curMessageBody = data.Message.MessageBody;
+                            if(data.Message.MessageBody.match('TopicOwner') && data.Message.MessageBody.match('Message')) {
+                                let tmp = JSON.parse(data.Message.MessageBody);
+                                curMessageBody = tmp.Message;
+                            }
+                            
+                            data.Message.MessageBody = _this.base64ToUtf8(curMessageBody);
+                        }
                     }
                     resolve(data);
                 }, function (ex) {
