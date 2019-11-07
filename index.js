@@ -601,7 +601,7 @@ var AliMNS;
                 });
             }
             catch (ex) {
-                // ignore any ex 
+                // ignore any ex
                 console.warn(ex);
                 // 过5秒重试
                 debug("Retry after 5 seconds");
@@ -723,7 +723,7 @@ var AliMNS;
                                 let tmp = JSON.parse(data.Message.MessageBody);
                                 curMessageBody = tmp.Message;
                             }
-                            
+
                             data.Message.MessageBody = _this.base64ToUtf8(curMessageBody);
                         }
                     }
@@ -860,7 +860,18 @@ var AliMNS;
                     self._openStack.accumulateNextGASend("MQBatch.recvP");
                     self._openStack.sendP("GET", url, null, null, options).done(function (data) {
                         debug(data);
-                        self.decodeB64Messages(data);
+                        // self.decodeB64Messages(data);
+                        if (data && data.Message && data.Message.MessageBody) {
+                            if (data && data.Message && data.Message.MessageBody) {
+                              let curMessageBody = data.Message.MessageBody;
+                              if(data.Message.MessageBody.match('TopicOwner') && data.Message.MessageBody.match('Message')) {
+                                let tmp = JSON.parse(data.Message.MessageBody);
+                                curMessageBody = tmp.Message;
+                              }
+
+                              data.Message.MessageBody = _this.base64ToUtf8(curMessageBody);
+                            }
+                          }
                         resolve(data);
                     }, function (ex) {
                         // for compatible with 1.x, still use literal "timeout"
